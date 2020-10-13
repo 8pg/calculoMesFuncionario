@@ -6,6 +6,7 @@ import entities.Worker;
 import entities_enum.WorkerLevel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -15,57 +16,49 @@ import java.util.Scanner;
  */
 public class Program {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         Locale.setDefault(Locale.US);
         Scanner read = new Scanner(System.in);
-        Worker worker = new Worker();
-        HourContract hContract = new HourContract();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-        Departament dep = new Departament();
-
         System.out.print("Enter departament's name: ");
-        dep.setName(read.nextLine());
+        String dep = read.nextLine();
         System.out.println("Enter worker Data: ");
         System.out.print("Name: ");
-        worker.setName(read.nextLine());
+        String name = read.nextLine();
         System.out.print("Level: ");
         String level = read.nextLine();
-        if (level.equalsIgnoreCase("JUNIOR")) {
-            worker.setLevel(WorkerLevel.JUNIOR);
-        } else if (level.equalsIgnoreCase("Pleno") || level.equalsIgnoreCase("Mid Level") || level.equalsIgnoreCase("MID_LEVEL")) {
-            worker.setLevel(WorkerLevel.MID_LEVEL);
-        } else if (level.equalsIgnoreCase("SENIOR")) {
-            worker.setLevel(WorkerLevel.SENIOR);
-        } else {
-
-        }
         System.out.print("Base salary: ");
-        worker.setBaseSalary(read.nextDouble());
+        double baseSalary = read.nextDouble();
+
+        Worker worker = new Worker(name, WorkerLevel.valueOf(level), baseSalary, new Departament(dep));
+
         System.out.print("\nHow many contracts to this worker? ");
         int qContract = read.nextInt();
 
         for (int i = 0; i < qContract; i++) {
-            System.out.print("Enter contract #" + i + 1 + " data:");
+            System.out.print("Enter contract #" + (i + 1) + " data:");
             System.out.print("Date (DD/MM/YYYY): ");
-            String date = read.next();
-            try {
-                hContract.setDate(sdf.parse(date));
-            } catch (ParseException ex) {
-                System.out.println("Formato de Data aceito: DD/MM/YYYY");
-            }
+            Date date = sdf.parse(read.next());
             System.out.print("Value per hour: ");
-            hContract.setValuePerHour(read.nextDouble());
+            double valuePerHour = read.nextDouble();
             System.out.print("Duration (hours): ");
-            hContract.setHours(read.nextInt());
+            int hours = read.nextInt();
+            HourContract contract = new HourContract(date, valuePerHour, hours);
+            worker.addContract(contract);
         }
 
-        System.out.println("Enter month and year to calculate income (MM/YYYY): ");
-
+        String sMonth = null, sYear = null;
+        int oYear, oMonth;
+        System.out.print("\nEnter month and year to calculate income (MM/YYYY): ");
+        String dateIncome = read.next();
+        sMonth = dateIncome.substring(0, 2);
+        sYear = dateIncome.substring(3);
+        oMonth = Integer.parseInt(sMonth);
+        oYear = Integer.parseInt(sYear);
         System.out.println("Name: " + worker.getName());
-        System.out.println("Departament: " + dep.getName());
-        System.out.println("Income for ");
-
+        System.out.println("Departament: " + worker.getDepartament().getName());
+        System.out.println("Income for " + sMonth + "/" + sYear + ": " + String.format("%.2f", worker.income(oYear, oMonth)));
         read.close();
     }
 

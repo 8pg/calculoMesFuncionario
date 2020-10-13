@@ -6,18 +6,6 @@ package entities_enum;
  */
 public enum WorkerLevel {
 
-    JUNIOR, MID_LEVEL, SENIOR;
+    JUNIOR, PLENO, SENIOR;
 
-    public String getByDescription() {
-        switch (this) {
-            case JUNIOR:
-                return "Junior";
-            case MID_LEVEL:
-                return "Pleno";
-            case SENIOR:
-                return "Senior";
-            default:
-                return "";
-        }
-    }
 }

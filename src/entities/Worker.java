@@ -1,6 +1,8 @@
 package entities;
 
 import entities_enum.WorkerLevel;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,10 +14,17 @@ public class Worker {
     private String name;
     private WorkerLevel level;
     private Double baseSalary;
-    private Departament departament; //Associação
-    private List<HourContract> contracts; //Composição
+    private Departament departament; //Associação por Composição
+    private List<HourContract> contracts = new ArrayList<>(); //Associação por Composição
 
     public Worker() {
+    }
+
+    public Worker(String name, WorkerLevel level, Double baseSalary, Departament departament) {
+        this.name = name;
+        this.level = level;
+        this.baseSalary = baseSalary;
+        this.departament = departament;
     }
 
     public String getName() {
@@ -42,15 +51,38 @@ public class Worker {
         this.baseSalary = baseSalary;
     }
 
-    public void addContract(HourContract contract) {
+    public Departament getDepartament() {
+        return departament;
+    }
 
+    public void setDepartament(Departament departament) {
+        this.departament = departament;
+    }
+
+    public void addContract(HourContract contract) {
+        contracts.add(contract);
     }
 
     public void removeContract(HourContract contract) {
-
+        contracts.remove(contract);
     }
 
     public Double income(Integer year, Integer month) {
-        return 0.00;
+        double income = baseSalary;
+        SimpleDateFormat sdfMonth = new SimpleDateFormat("MM");
+        SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
+        String sMonth, sYear;
+        int oYear, oMonth;
+        for (HourContract contract : contracts) {
+            sMonth = sdfMonth.format(contract.getDate());
+            sYear = sdfYear.format(contract.getDate());
+            oMonth = Integer.parseInt(sMonth);
+            oYear = Integer.parseInt(sYear);
+            if (oYear == year && oMonth == month) {
+                income += contract.totalValue();
+            }
+        }
+        return income;
     }
+
 }
